@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://multiplayer-camera-kit.sociobot.in/sitemap.xml
