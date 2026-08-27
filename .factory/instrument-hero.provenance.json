@@ -1,0 +1,9 @@
+{
+  "prompt": "Use case: stylized-concept. Asset type: wide editorial hero image for a developer tool landing page. Scene/backdrop: a top-down 1950s optical rangefinder and camera-calibration instrument resting on warm cream enamel, with a dark teal glass viewfinder. Subject: four small colored player tokens held safely inside one brass-and-vermilion rectangular framing reticle, with subtle coordinate ticks and mechanical dials. Style/medium: tactile mid-century industrial product illustration, screen-printed gouache texture, crisp geometric forms, restrained and sophisticated. Composition/framing: landscape 3:2, instrument concentrated centrally with calm negative space around the edges, no text. Lighting/mood: soft workshop light, precise and trustworthy. Color palette: warm cream #F3E9D2, deep green-black #102825, oxidized teal #88B7A9, brass #B78938, vermilion #B83620. Constraints: original artwork, no logos, no words, no letters, no numbers, no watermark, no gradients, no generic laptop or dashboard UI.",
+  "generator": "/opt/fleet/lib/gen-image.sh",
+  "deployment": "factory-image",
+  "source_size": "1536x1024",
+  "quality": "high",
+  "optimized_asset": "site/public/instrument-hero.webp",
+  "optimized_bytes": 91152
+}

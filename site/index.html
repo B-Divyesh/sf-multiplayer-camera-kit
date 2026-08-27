@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102825" />
+    <meta
+      name="description"
+      content="A tiny, deterministic multi-target camera policy for browser co-op games."
+    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%224%22 fill=%22%23102825%22/><path d=%22M7 10v-3h5M20 7h5v5M25 20v5h-5M12 25H7v-5%22 fill=%22none%22 stroke=%22%23e24e2c%22 stroke-width=%222%22/><circle cx=%2216%22 cy=%2216%22 r=%223%22 fill=%22%23f3e9d2%22/></svg>" />
+    <title>Multiplayer Camera Kit — Keep every player in frame</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="offline-status" class="offline-status" role="status" hidden>
+      Offline bench mode — the demo and camera math still work locally.
+    </div>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="Multiplayer Camera Kit home">
+        <span aria-hidden="true" class="wordmark-mark">MCK</span>
+        <span>Range unit 01</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#playground">Playground</a>
+        <a href="#integration">Integrate</a>
+        <a href="#replay">Replay test</a>
+        <a href="https://github.com/B-Divyesh/sf-multiplayer-camera-kit">Source</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-lamp" aria-hidden="true"></span> Camera policy / npm 0.1.0</p>
+          <h1 id="hero-title">Keep the whole party in frame.</h1>
+          <p class="hero-lead">
+            One small, inspectable camera policy for two-to-four-player browser games. Feed it rectangles;
+            get a stable pose, visible safety envelope, and replayable proof.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#playground">Calibrate the camera</a>
+            <button class="install-command" type="button" data-copy="npm install multiplayer-camera-kit">
+              <span aria-hidden="true">$</span>
+              <code>npm i multiplayer-camera-kit</code>
+              <span class="copy-label">Copy</span>
+            </button>
+          </div>
+          <p id="copy-status" class="sr-only" role="status" aria-live="polite"></p>
+        </div>
+        <figure class="hero-figure">
+          <img
+            src="/instrument-hero.webp"
+            width="1536"
+            height="1024"
+            fetchpriority="high"
+            alt="An illustrated mid-century optical instrument holding four game pieces inside a red framing reticle."
+          />
+          <figcaption><span>Optical policy</span><span>4 subjects / 1 frame</span></figcaption>
+        </figure>
+      </section>
+
+      <ul class="spec-strip" aria-label="Package specifications">
+        <li><strong>0</strong><span>runtime dependencies</span></li>
+        <li><strong>&lt; 4 KB</strong><span>minified + gzip</span></li>
+        <li><strong>ESM + CJS</strong><span>typed exports</span></li>
+        <li><strong>Fixed-step</strong><span>replay proof</span></li>
+      </ul>
+
+      <section class="playground section-grid" id="playground" aria-labelledby="playground-title">
+        <div class="section-intro">
+          <p class="eyebrow">Live viewfinder</p>
+          <h2 id="playground-title">See the safety margin working.</h2>
+          <p>
+            The vermilion box is the padded safe area. Change the formation or nudge a selected player;
+            the exported camera policy does every piece of framing below.
+          </p>
+        </div>
+        <div class="instrument-panel">
+          <div class="instrument-toolbar">
+            <fieldset class="preset-switches">
+              <legend>Formation</legend>
+              <label><input type="radio" name="preset" value="duo" checked /> Duo drift</label>
+              <label><input type="radio" name="preset" value="quad" /> Four corners</label>
+              <label><input type="radio" name="preset" value="breach" /> Limit breach</label>
+            </fieldset>
+            <div class="panel-actions">
+              <button id="motion-toggle" class="toggle-button" type="button" aria-pressed="false">
+                <span class="button-icon" aria-hidden="true">Ⅱ</span><span>Pause motion</span>
+              </button>
+              <button id="clear-targets" class="quiet-button" type="button">Clear players</button>
+            </div>
+          </div>
+
+          <div class="viewfinder-shell">
+            <div class="tick-row" aria-hidden="true"><span>0</span><span>400</span><span>800</span><span>1200</span><span>1600</span></div>
+            <canvas
+              id="camera-canvas"
+              width="960"
+              height="540"
+              tabindex="0"
+              role="img"
+              aria-label="Live camera viewfinder with two players safely framed."
+              aria-describedby="viewfinder-description keyboard-help"
+            >A live camera view showing player rectangles inside a padded safety envelope.</canvas>
+            <div id="empty-state" class="canvas-state" hidden>
+              <strong>No players on the field</strong>
+              <span>The camera is holding its last valid pose.</span>
+              <button id="restore-targets" type="button">Add a player</button>
+            </div>
+            <div id="error-state" class="canvas-state canvas-error" role="alert" hidden>
+              <strong>The viewfinder could not render</strong>
+              <span id="error-message">Check the camera configuration and reload.</span>
+              <button id="retry-demo" type="button">Reset the demo</button>
+            </div>
+            <p id="viewfinder-description" class="sr-only">
+              The live viewfinder displays world-space players, the camera bounds, and a red padded safe area.
+              Current values are repeated in the readout after the canvas.
+            </p>
+          </div>
+
+          <div class="instrument-readout" aria-label="Camera readout">
+            <div><span>Center X</span><output id="readout-x">0000.0</output></div>
+            <div><span>Center Y</span><output id="readout-y">0000.0</output></div>
+            <div><span>Zoom</span><output id="readout-zoom">1.000×</output></div>
+            <div><span>Safe</span><output id="readout-safe" class="readout-status">YES</output></div>
+          </div>
+
+          <div class="player-controls">
+            <label for="selected-player">Selected player</label>
+            <select id="selected-player"><option value="p1">Player 1</option><option value="p2">Player 2</option></select>
+            <div class="nudge-controls" aria-label="Nudge selected player">
+              <button type="button" data-nudge="up" aria-label="Nudge selected player up">↑</button>
+              <button type="button" data-nudge="left" aria-label="Nudge selected player left">←</button>
+              <button type="button" data-nudge="down" aria-label="Nudge selected player down">↓</button>
+              <button type="button" data-nudge="right" aria-label="Nudge selected player right">→</button>
+            </div>
+            <p id="keyboard-help">Focus the viewfinder and use arrow keys to nudge. Press Space to pause.</p>
+          </div>
+          <p id="demo-status" class="demo-status" role="status" aria-live="polite">Calibrating the camera…</p>
+        </div>
+      </section>
+
+      <section class="integration section-grid" id="integration" aria-labelledby="integration-title">
+        <div class="section-intro sticky-intro">
+          <p class="eyebrow">Under 30 lines</p>
+          <h2 id="integration-title">Own the policy. Keep your renderer.</h2>
+          <p>
+            Coordinates are world pixels, +x right and +y down. The output is a top-left position and a
+            pixels-per-world-pixel zoom—plain values that slot into Phaser, Pixi, Canvas, or WebGL.
+          </p>
+          <dl class="coordinate-notes">
+            <div><dt>Padding</dt><dd>Viewport pixels</dd></div>
+            <div><dt>Targets</dt><dd>Axis-aligned rectangles</dd></div>
+            <div><dt>Empty list</dt><dd>Holds the last pose</dd></div>
+            <div><dt>World edge</dt><dd>Camera clamps</dd></div>
+          </dl>
+        </div>
+        <div class="code-instrument">
+          <div class="code-header"><span>camera.ts</span><span>17 lines</span></div>
+          <pre><code><span class="code-accent">import</span> { createCamera } <span class="code-accent">from</span> 'multiplayer-camera-kit'
+
+<span class="code-accent">const</span> camera = createCamera({
+  viewport: { width: 1280, height: 720 },
+  world: { x: 0, y: 0, width: 4096, height: 2048 },
+  padding: 96,
+  minZoom: 0.5,
+  maxZoom: 1.5,
+})
+
+<span class="code-accent">function</span> tick(dt: number) {
+  <span class="code-accent">const</span> pose = camera.update(players, dt)
+  world.position.set(-pose.x * pose.zoom, -pose.y * pose.zoom)
+  world.scale.set(pose.zoom)
+}</code></pre>
+          <div class="code-footer"><span class="status-lamp" aria-hidden="true"></span><span>No engine adapter required</span></div>
+        </div>
+      </section>
+
+      <section class="replay-section" id="replay" aria-labelledby="replay-title">
+        <div class="replay-copy">
+          <p class="eyebrow">Deterministic trace runner</p>
+          <h2 id="replay-title">Turn “someone fell off-screen” into a failing test.</h2>
+          <p>
+            Timestamped rectangles are interpolated and replayed at a fixed simulation step. The report names
+            the first target, time, and policy limit that failed.
+          </p>
+          <div class="replay-actions">
+            <button id="run-safe-trace" class="button button-primary" type="button">Run safe trace</button>
+            <button id="run-broken-trace" class="button button-secondary" type="button">Introduce regression</button>
+          </div>
+        </div>
+        <div class="trace-printer" aria-live="polite" aria-atomic="true">
+          <div class="printer-slots" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div id="trace-result" class="trace-paper">
+            <p class="trace-kicker">MCK / replay receipt</p>
+            <strong>Ready to run</strong>
+            <p>Choose a known-good trace or a deliberate limit breach.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="principles" aria-labelledby="principles-title">
+        <p class="eyebrow">Policy, not framework</p>
+        <h2 id="principles-title">Small enough to audit between playtests.</h2>
+        <ol>
+          <li><span>01</span><div><h3>Fit the party</h3><p>Union the target rectangles, reserve screen-space padding, and preserve the viewport aspect ratio.</p></div></li>
+          <li><span>02</span><div><h3>Respect the rails</h3><p>Clamp against world bounds and explicit zoom limits. Impossible framing becomes visible metadata, never a surprise.</p></div></li>
+          <li><span>03</span><div><h3>Prove the path</h3><p>Replay target traces at a fixed step and assert the same safety rule you inspect in development.</p></div></li>
+        </ol>
+      </section>
+
+      <section class="final-cta" aria-labelledby="cta-title">
+        <div>
+          <p class="eyebrow">MIT licensed / no telemetry</p>
+          <h2 id="cta-title">Your players move. Your framing math doesn’t have to.</h2>
+        </div>
+        <a class="button button-primary" href="https://github.com/B-Divyesh/sf-multiplayer-camera-kit">Inspect the source</a>
+      </section>
+    </main>
+
+    <footer>
+      <p>Multiplayer Camera Kit <span aria-hidden="true">/</span> Param Factory 2026</p>
+      <p>Free, local, and quiet. No accounts. No player data. No analytics.</p>
+    </footer>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>
