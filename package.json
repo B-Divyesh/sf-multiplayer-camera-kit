@@ -29,7 +29,7 @@
     "build:lib": "tsup",
     "build:site": "vite build --config vite.config.ts",
     "build": "npm run clean && npm run build:lib && npm run build:site",
-    "test:unit": "vitest run",
+    "test:unit": "vitest run --config vitest.config.ts",
     "test:e2e": "node scripts/e2e.mjs",
     "test": "npm run test:unit && npm run build && npm run test:e2e",
     "typecheck": "tsc --noEmit"
