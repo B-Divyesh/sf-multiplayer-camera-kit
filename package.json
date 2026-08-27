@@ -1,0 +1,55 @@
+{
+  "name": "multiplayer-camera-kit",
+  "version": "0.1.0",
+  "description": "Safe, inspectable multi-target camera framing for browser games",
+  "type": "module",
+  "main": "./dist/package/index.cjs",
+  "module": "./dist/package/index.js",
+  "types": "./dist/package/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/package/index.d.ts",
+      "import": "./dist/package/index.js",
+      "require": "./dist/package/index.cjs"
+    }
+  },
+  "files": [
+    "dist/package",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "dev": "vite --config vite.config.ts",
+    "build:lib": "tsup",
+    "build:site": "vite build --config vite.config.ts",
+    "build": "npm run clean && npm run build:lib && npm run build:site",
+    "test:unit": "vitest run",
+    "test:e2e": "node scripts/e2e.mjs",
+    "test": "npm run test:unit && npm run build && npm run test:e2e",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "camera",
+    "multiplayer",
+    "canvas",
+    "phaser",
+    "pixi",
+    "game-development"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@types/node": "22.15.3",
+    "playwright": "1.58.2",
+    "tsup": "8.5.0",
+    "typescript": "5.8.3",
+    "vite": "6.1.0",
+    "vitest": "3.1.2"
+  }
+}
