@@ -1,0 +1,30 @@
+{
+  "slug": "multiplayer-camera-kit",
+  "title": "Multiplayer Camera Kit",
+  "territory": "games-creative",
+  "user": "Developers of small browser 2D co-op games who need a safe, inspectable camera that keeps several players visible without rebuilding framing math.",
+  "evidence": [
+    {
+      "url": "https://hn.algolia.com/api/v1/items/47074684",
+      "date": "2026-02-19",
+      "quote_or_summary": "A developer asks which frameworks people use to create multiplayer 2D browser games, beyond PhaserJS."
+    },
+    {
+      "url": "https://github.com/godotengine/godot-proposals/issues/14156",
+      "date": "2026-02-05",
+      "quote_or_summary": "A local-multiplayer developer calls multi-target camera scripting a massive hurdle and requests automatic bounding-box framing and zoom."
+    }
+  ],
+  "recurrence": "Two independent 2026 game-development requests: choosing a browser multiplayer stack and avoiding heavy camera calculations for multi-character play.",
+  "current_workaround": "Copy a camera gist, hand-code bounds and smoothing, hard-code split-screen thresholds, and tune it only after players fall off-screen.",
+  "incumbents_and_gap": "Phaser, PixiJS, and Godot expose cameras but leave product-specific multi-target policies to each game. Existing snippets rarely provide a visible safety envelope or deterministic replay tests.",
+  "smallest_useful_product": "An npm package for Canvas/WebGL games that takes player rectangles and world bounds, outputs camera position/zoom plus a debug overlay and deterministic trace runner. Non-goals: networking, rendering engine, split-screen renderer, or physics.",
+  "success_measure": "A sample Phaser/Pixi game reaches stable two-to-four-player framing in under 30 lines of integration, and a supplied replay catches a deliberate off-screen regression.",
+  "artifact_class": "library-npm",
+  "monetization": "free — engine-agnostic primitives benefit from open adoption; paid support is optional later.",
+  "constraints": "Document coordinate and aspect-ratio assumptions; no player telemetry; preserve deterministic behaviour across frame rates; provide accessibility-safe zoom limits.",
+  "est_build_effort": "S",
+  "why_distinct": "It is a narrowly scoped, testable multi-target camera policy rather than another game framework.",
+  "confidence": 4,
+  "state": "RESEARCHED"
+}
