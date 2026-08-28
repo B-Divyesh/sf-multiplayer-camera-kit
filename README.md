@@ -60,6 +60,7 @@ drawDebugOverlay(context, camera.inspect(), {
 ### Deterministic traces
 
 Trace samples are timestamped in milliseconds. The runner linearly interpolates target rectangles and advances the policy at a fixed step, so changing display frame rate does not change the result.
+`maxZoomDelta`, when supplied, must be a finite number greater than or equal to zero; invalid configured values throw `CameraInputError` rather than producing a false-green report.
 
 ```ts
 import { runTrace } from 'multiplayer-camera-kit'

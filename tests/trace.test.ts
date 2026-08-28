@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { runTrace } from '../src'
+import { CameraInputError, runTrace } from '../src'
 import type { CameraTrace } from '../src'
 
 const replay: CameraTrace = {
@@ -28,6 +28,21 @@ const replay: CameraTrace = {
     },
   ],
   assertions: { targetsVisible: true, maxZoomDelta: 0.08 },
+}
+
+const zoomJumpReplay: CameraTrace = {
+  config: {
+    viewport: { width: 1000, height: 500 },
+    world: { x: 0, y: 0, width: 4096, height: 1000 },
+    padding: 0,
+    minZoom: 0.25,
+    maxZoom: 1.5,
+    damping: 0,
+  },
+  samples: [
+    { at: 0, targets: [{ id: 'p1', x: 1200, y: 200, width: 100, height: 100 }] },
+    { at: 100, targets: [{ id: 'p1', x: 100, y: 200, width: 2886, height: 100 }] },
+  ],
 }
 
 describe('runTrace', () => {
@@ -68,6 +83,12 @@ describe('runTrace', () => {
     expect(report.failures[0]).toMatchObject({ code: 'target-outside-safe-area', targetId: 'left', at: 0 })
   })
 
+  it('checks a large zoom jump between fixed steps', () => {
+    const report = runTrace({ ...zoomJumpReplay, assertions: { maxZoomDelta: 0.1 } }, { fixedStepMs: 100 })
+    expect(report.frames.map(frame => frame.pose.zoom)).toEqual([1.5, 1000 / 2886])
+    expect(report.failures).toContainEqual(expect.objectContaining({ code: 'zoom-delta-exceeded', at: 100 }))
+  })
+
   it('rejects ambiguous trace identities and timestamps', () => {
     expect(() => runTrace({ ...replay, samples: [] })).toThrow('at least one sample')
     expect(() =>
@@ -83,4 +104,11 @@ describe('runTrace', () => {
       }),
     ).toThrow('strictly increasing')
   })
+
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -0.01])(
+    'rejects invalid maxZoomDelta assertion %s',
+    maxZoomDelta => {
+      expect(() => runTrace({ ...zoomJumpReplay, assertions: { maxZoomDelta } }, { fixedStepMs: 100 })).toThrow(CameraInputError)
+    },
+  )
 })

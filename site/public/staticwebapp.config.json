@@ -1,4 +1,10 @@
 {
+  "globalHeaders": {
+    "content-security-policy": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'; frame-ancestors 'none'",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "accelerometer=(), camera=(), geolocation=(), microphone=(), payment=(), usb=()",
+    "x-frame-options": "DENY"
+  },
   "routes": [
     {
       "route": "/assets/*",

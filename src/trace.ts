@@ -71,6 +71,13 @@ export function runTrace(trace: CameraTrace, options: TraceRunOptions = {}): Tra
   const fixedStepMs = options.fixedStepMs ?? 1000 / 60
   assertFinite(fixedStepMs, 'fixedStepMs')
   if (fixedStepMs <= 0) throw new CameraInputError('fixedStepMs must be greater than 0')
+  const maxZoomDelta = trace.assertions?.maxZoomDelta
+  if (maxZoomDelta !== undefined) {
+    assertFinite(maxZoomDelta, 'assertions.maxZoomDelta')
+    if (maxZoomDelta < 0) {
+      throw new CameraInputError('assertions.maxZoomDelta must be greater than or equal to 0')
+    }
+  }
   const durationMs = samples[samples.length - 1]!.at
   const camera = createCamera(trace.config)
   const failures: TraceFailure[] = []
@@ -97,7 +104,6 @@ export function runTrace(trace: CameraTrace, options: TraceRunOptions = {}): Tra
         }
       })
     }
-    const maxZoomDelta = trace.assertions?.maxZoomDelta
     if (maxZoomDelta !== undefined && previousZoom !== undefined) {
       const actual = Math.abs(pose.zoom - previousZoom)
       if (actual > maxZoomDelta) {

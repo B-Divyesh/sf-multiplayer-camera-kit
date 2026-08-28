@@ -72,10 +72,20 @@ function formations(name: PresetName, time: number): Rect[] {
       { id: 'p2', x: 1506, y: 390, width: 42, height: 58 },
     ].map(applyOffset)
   }
-  return [
-    { id: 'p1', x: 520 + Math.sin(movement * 0.00072) * 170, y: 400 + Math.cos(movement * 0.00051) * 80, width: 42, height: 58 },
-    { id: 'p2', x: 960 + Math.cos(movement * 0.00066) * 170, y: 420 + Math.sin(movement * 0.00048) * 95, width: 42, height: 58 },
-  ].map(applyOffset)
+  // The phone viewfinder retains the same 68px horizontal safety margin and
+  // 0.38 zoom floor as desktop. Keep its ordinary demonstration formation
+  // inside that envelope; "Limit breach" remains the explicit limit example.
+  const compactDuo = canvas.getBoundingClientRect().width < 600
+  const duo = compactDuo
+    ? [
+        { id: 'p1', x: 640 + Math.sin(movement * 0.00072) * 75, y: 400 + Math.cos(movement * 0.00051) * 50, width: 42, height: 58 },
+        { id: 'p2', x: 875 + Math.cos(movement * 0.00066) * 75, y: 420 + Math.sin(movement * 0.00048) * 60, width: 42, height: 58 },
+      ]
+    : [
+        { id: 'p1', x: 520 + Math.sin(movement * 0.00072) * 170, y: 400 + Math.cos(movement * 0.00051) * 80, width: 42, height: 58 },
+        { id: 'p2', x: 960 + Math.cos(movement * 0.00066) * 170, y: 420 + Math.sin(movement * 0.00048) * 95, width: 42, height: 58 },
+      ]
+  return duo.map(applyOffset)
 }
 
 function syncPlayerSelect(targets: readonly Rect[]): void {
@@ -190,6 +200,7 @@ function render(time: number): void {
     readoutZoom.value = `${pose.zoom.toFixed(3)}×`
     readoutSafe.value = snapshot.allTargetsVisible ? 'YES' : 'LIMIT'
     readoutSafe.dataset.safe = String(snapshot.allTargetsVisible)
+    canvas.dataset.allTargetsVisible = String(snapshot.allTargetsVisible)
     const count = targets.length
     const summary = count === 0
       ? 'No players detected. Holding the last camera pose.'

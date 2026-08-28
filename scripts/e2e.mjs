@@ -95,6 +95,8 @@ try {
   await mobilePage.goto(origin, { waitUntil: 'networkidle' })
   await mobilePage.waitForFunction(() => document.body.dataset.cameraReady === 'true')
   assert(await mobilePage.locator('#error-state').isHidden(), 'Mobile camera entered the error state')
+  assert(await mobilePage.locator('#camera-canvas').getAttribute('data-all-targets-visible') === 'true', 'Default 390px Duo drift must fit every target inside the padded safe envelope')
+  assert(await mobilePage.locator('#readout-safe').textContent() === 'YES', 'Default 390px Duo drift must not begin at the safety limit')
   const horizontalOverflow = await mobilePage.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
   assert(horizontalOverflow <= 1, `Mobile page overflows horizontally by ${horizontalOverflow}px`)
   assert(await mobilePage.locator('#motion-toggle').getAttribute('aria-pressed') === 'true', 'Reduced motion should pause target drift')
