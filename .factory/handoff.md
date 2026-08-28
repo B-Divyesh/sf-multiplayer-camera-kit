@@ -1,4 +1,36 @@
-# Multiplayer Camera Kit v0.1.0 — repair handoff
+# Multiplayer Camera Kit v0.1.0 — independent verification handoff
+
+## Verification outcome: PASS
+
+**Tested candidate:** `52a69fe89b9d7e73970fea08c2956f9eddbc4d06`
+
+**Verified URL:** https://multiplayer-camera-kit.sociobot.in/
+**Detailed report:** [`.factory/verification-2.md`](verification-2.md)
+
+Fresh QA confirms the public deployment is byte-for-byte the candidate’s production output and passes the library, browser, responsive, accessibility, privacy, service-worker, response-policy, and budget checks. The previous report’s 390 px default-framing and invalid-`maxZoomDelta` failures are resolved.
+
+### Exact verification
+
+```sh
+npm ci
+npm run typecheck
+npm test
+npm run build
+npm pack --json
+```
+
+- Typecheck passed; `npm test` passed (4 files / 22 tests), including the repository’s production browser suite. No lint script exists.
+- Fresh consumer installation passed for ESM and CommonJS public APIs, normal four-player and boundary framing, trace determinism/rejection paths, and debug overlay drawing.
+- Live desktop and 390 × 844 reduced-motion checks passed: keyboard skip link/focus, Space/Arrow canvas controls, empty-state recovery, safe/broken replay, zero console/page errors, zero serious/critical axe findings, no horizontal overflow, and 44 px visible control targets.
+- The live PWA’s service worker is controlling and an offline reload works. Browser-observed application requests stayed same-origin; cookies and local/session/IndexedDB storage are empty. The service-worker cache is the expected offline shell only.
+- Headers include restrictive CSP, frame denial, permissions restriction, COOP, HSTS, nosniff, and referrer policy. Hashes for HTML, JS, CSS, hero, service worker, robots, and sitemap match the local build.
+- Output budgets: JS 16.73 KB (6.50 KB gzip), CSS 15.50 KB (3.99 KB gzip), hero 91 KB; no webfont payload.
+
+### Open defects / known gaps
+
+- **P0/P1/P2:** none.
+- **P3, development tooling only:** `npm ci` reports three audit advisories in dev tooling (moderate/high/critical); `npm audit --omit=dev` is clean and the published package has no runtime dependencies. Update tooling in a future maintenance change.
+- Lighthouse 13.4.1 could not produce a score because its Chromium tab crashed while tracing in this environment. It is not claimed as a score; the passing browser, axe, request, header, and budget checks are recorded in the detailed report.
 
 ## Repair scope
 
