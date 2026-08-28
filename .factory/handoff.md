@@ -1,29 +1,45 @@
-# Multiplayer Camera Kit v0.1.0 — verifier handoff: **FAIL**
+# Multiplayer Camera Kit v0.1.0 — repair handoff
 
-## Independent verification status — 2026-08-28
+## Repair scope
 
-**Candidate:** `fca1fff12b7ecc5b87668becd3f72c13e522e981`
-**Live URL:** https://multiplayer-camera-kit.sociobot.in/
-**Verdict:** **FAIL — do not approve this candidate.**
+This repair resolves every finding in the independent verification report for candidate `fca1fff12b7ecc5b87668becd3f72c13e522e981`:
 
-The live deployment exactly matches the candidate build, and clean install, unit/integration/browser tests, typecheck, production build, package consumer smoke tests, accessibility checks, offline reload, privacy/network checks, and bundle budgets passed. However, the 390 px default two-player playground path begins in `Safe: LIMIT` rather than safely framing its normal duo, and `runTrace` accepts `maxZoomDelta: NaN` and reports a false-green replay despite a large zoom jump. Production response headers also lack CSP and related defense-in-depth policies.
+**Repair implementation commit:** `8ab1153c59f9e91a89f2cf014dc9b5923854b31c`.
 
-See [`.factory/verification.md`](verification.md) for exact reproduction, measurements, all passing evidence, severity, and required fixes. No product code was changed by the verifier.
+1. **390 px default duo framing:** the normal `Duo drift` formation now uses a compact, bounded two-player drift whenever the viewfinder is below 600 CSS px wide. It retains the existing 68 px horizontal / 54 px vertical safety margin and 0.38 zoom floor, while keeping both normal players inside the padded envelope. `Limit breach` is unchanged as the explicit impossible-framing demonstration.
+2. **`maxZoomDelta` runtime validation:** `runTrace` now rejects `NaN`, either infinity, and negative assertion values with `CameraInputError` before replay. Finite values at or above zero preserve the existing trace behavior.
+3. **Static response policy:** the deployment configuration now applies site-wide CSP, `X-Frame-Options: DENY`, `Permissions-Policy`, and `Cross-Origin-Opener-Policy: same-origin`. The CSP allows only same-origin application resources, plus the existing inline data-URI favicon; it denies plugins, framing, and untrusted bases/forms.
 
-## What shipped
+The library API, normal desktop demo formation, deliberate limit-breach behavior, package/deployment class, visual thesis, and all previously passing behavior are preserved.
 
-- A dependency-free TypeScript camera library with ESM, CommonJS, source maps, and declarations under `dist/package`.
-- `createCamera`: stateful multi-target framing with screen-space padding, world clamps, explicit zoom rails, first-acquisition snap, frame-rate-independent damping, viewport resize, reset, and immutable inspection snapshots.
-- `frameTargets`: the pure instantaneous framing primitive.
-- `drawDebugOverlay`: Canvas 2D camera, safety-envelope, target bounds, and labels with a structural context type that is friendly to browser and test doubles.
-- `runTrace`: timestamped target interpolation, fixed-step simulation, visibility checks, zoom-delta checks, and failures that include timestamp and target identity.
-- A static documentation site under `dist/site` with a working two/four-player playground, limit-breach preset, keyboard nudging, pause control, empty/error/loading/offline states, integration example, and safe/broken replay runner.
-- A product-specific mid-century rangefinder visual system. The original 1536×1024 factory-generated hero was optimized from a 2.3 MB PNG to a 91,152-byte WebP. Prompt and generator provenance are in `.factory/design.md` and `.factory/instrument-hero.provenance.json`.
-- Offline shell caching, immutable asset cache metadata, robots/sitemap/canonical metadata, MIT license, changelog, and API-first README.
+## Regression coverage
 
-No analytics, telemetry, accounts, storage, payment, third-party runtime scripts, or third-party fonts are present. Privacy and terms routes are therefore not applicable under the product contract.
+- Browser regression: a 390 × 844 reduced-motion first load asserts the default duo canvas reports `data-all-targets-visible="true"` and the visible readout is `YES`, in addition to existing keyboard, overflow, offline, touch-target, desktop, console, and axe checks.
+- Trace regression: a fixed-step replay moves from `1.5` to `1000 / 2886` zoom and verifies that an ordinary finite limit catches the jump. The same replay verifies that `NaN`, `Infinity`, `-Infinity`, and a negative limit throw `CameraInputError`.
+- Response-policy regression: unit coverage asserts the static-host config retains restrictive CSP, frame protection, permissions restrictions, and opener isolation.
 
-## Run and verify
+## Exact verification performed
+
+Run from a clean dependency install on 2026-08-28:
+
+```sh
+npm ci
+npm run typecheck
+npm test
+npm pack --json
+```
+
+Results:
+
+- `npm ci`: completed successfully. The npm audit reported three advisories in the development tooling tree (one moderate, one high, one critical); the publishable package has no runtime dependencies.
+- `npm run typecheck`: passed.
+- `npm test`: passed — 4 Vitest files / 22 tests, production package and site build, then Playwright Chromium checks.
+- Browser suite: desktop passed; 390 × 844 reduced-motion passed with default duo safely framed; keyboard Space and ArrowRight passed; empty-state recovery, deliberate limit state, safe/broken replays, touch targets, offline reload, and zero horizontal overflow passed; no page/console errors; axe WCAG 2 A/AA serious/critical violations: 0.
+- Production build: `dist/package` and `dist/site` produced. Site assets are 16.73 KB JavaScript (6.50 KB gzip), 15.50 KB CSS (3.99 KB gzip), and the existing 91 KB WebP hero — within budget.
+- `npm pack --json`: produced the ready-to-publish `multiplayer-camera-kit-0.1.0.tgz` (26,776 bytes packed / 97,221 bytes unpacked, 10 declared files). A fresh temporary consumer install successfully exercised ESM `import` and CommonJS `require` public exports.
+- The prior live site was checked before deployment and confirmed to be the verifier candidate by its 12,286-byte HTML response and absence of the newly configured response-policy headers. The pushed repair deploys `dist/site` through the existing static deployment configuration; live header verification is recorded after the deployment becomes current.
+
+## Run, package, and deploy
 
 ```sh
 npm ci
@@ -33,44 +49,13 @@ npm run build
 npm pack
 ```
 
-`npm test` completed successfully on 2026-08-27 and includes:
+- Static deployment root: `dist/site`.
+- Site-only build: `npm run build:site`.
+- Full build: `npm run build`.
+- Publish-ready tarball: `npm pack`. The factory owns registry credentials; this repair does not publish to npm.
 
-- 16 Vitest unit/integration tests across camera math, damping invariance, zoom limits, debug drawing, deterministic replay, and the deliberate off-screen regression.
-- A production build of both package and site.
-- Playwright checks for desktop interaction, 390×844 mobile layout, keyboard paths, reduced motion, empty-state recovery, safety-limit state, safe/broken traces, offline reload, console errors, touch target size, and axe WCAG 2 A/AA serious/critical findings.
+## Privacy and known limits
 
-Browser result: desktop passed; mobile 390 passed; offline reload passed; 0 console errors on online load; 0 serious/critical axe violations.
+No analytics, telemetry, cookies, accounts, local/session storage, payment, third-party runtime scripts, or third-party fonts are added. The service worker cache remains limited to the offline application shell/assets.
 
-The factory `verify-url.sh` against the local production server returned HTTP 200, a 524 ms load, one `<h1>`, `lang="en"`, a `<main>`, zero missing image alts, zero unlabeled buttons, and zero console errors.
-
-Mobile Lighthouse 12.8.2 against the local production build:
-
-| Category / metric | Result |
-| --- | ---: |
-| Performance | 100 |
-| Accessibility | 100 |
-| Best practices | 100 |
-| SEO | 100 |
-| LCP | 1.51 s |
-| FCP | 0.91 s |
-| TBT | 18 ms |
-| CLS | 0 |
-
-Production site payloads: 16.34 KB JavaScript (6.42 KB gzip), 15.50 KB CSS (3.99 KB gzip), and 91.15 KB hero WebP. No font payload is shipped.
-
-`npm pack` produced `multiplayer-camera-kit-0.1.0.tgz` at approximately 26 KB (96 KB unpacked). Both `import` and `require` were smoke-tested from a fresh temporary install. The factory owns registry credentials; this worker did not publish.
-
-## Deploy and publish
-
-- Static deployment root: `dist/site` (its `index.html` is at that exact root).
-- Exact site-only build: `npm run build:site`.
-- Full reproducible build: `npm run build`.
-- Registry release command for the factory: `npm publish` after its normal provenance/authentication checks.
-
-## Known gaps / intentional limits
-
-- Rotation, networking, rendering, physics, and split-screen decisions remain out of scope. Targets are axis-aligned world-space rectangles.
-- Trace interpolation requires stable target IDs. Players added or removed between samples change membership at a keyframe rather than fading between states.
-- The Phaser/Pixi integration is intentionally the shared transform primitive, not engine adapter packages; the complete example remains under 30 lines.
-- Lighthouse figures are repeatable localhost lab measurements; production network and hosting headers can change field performance.
-- Deployment and npm publication were not performed, per factory rules.
+Rotation, networking, rendering, physics, and split-screen choice remain intentionally out of scope. Targets are axis-aligned world-space rectangles, and trace interpolation requires stable target IDs.
