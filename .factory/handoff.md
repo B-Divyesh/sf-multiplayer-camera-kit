@@ -1,4 +1,14 @@
-# Multiplayer Camera Kit v0.1.0 — handoff
+# Multiplayer Camera Kit v0.1.0 — verifier handoff: **FAIL**
+
+## Independent verification status — 2026-08-28
+
+**Candidate:** `fca1fff12b7ecc5b87668becd3f72c13e522e981`
+**Live URL:** https://multiplayer-camera-kit.sociobot.in/
+**Verdict:** **FAIL — do not approve this candidate.**
+
+The live deployment exactly matches the candidate build, and clean install, unit/integration/browser tests, typecheck, production build, package consumer smoke tests, accessibility checks, offline reload, privacy/network checks, and bundle budgets passed. However, the 390 px default two-player playground path begins in `Safe: LIMIT` rather than safely framing its normal duo, and `runTrace` accepts `maxZoomDelta: NaN` and reports a false-green replay despite a large zoom jump. Production response headers also lack CSP and related defense-in-depth policies.
+
+See [`.factory/verification.md`](verification.md) for exact reproduction, measurements, all passing evidence, severity, and required fixes. No product code was changed by the verifier.
 
 ## What shipped
 
