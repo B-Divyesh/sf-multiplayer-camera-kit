@@ -4,7 +4,7 @@
 
 This repair resolves every finding in the independent verification report for candidate `fca1fff12b7ecc5b87668becd3f72c13e522e981`:
 
-**Repair implementation commit:** `8ab1153c59f9e91a89f2cf014dc9b5923854b31c`.
+**Repair implementation commit:** `8ab115398e1a3c2b08182fa44fd8e9b0ea4d4c25`.
 
 1. **390 px default duo framing:** the normal `Duo drift` formation now uses a compact, bounded two-player drift whenever the viewfinder is below 600 CSS px wide. It retains the existing 68 px horizontal / 54 px vertical safety margin and 0.38 zoom floor, while keeping both normal players inside the padded envelope. `Limit breach` is unchanged as the explicit impossible-framing demonstration.
 2. **`maxZoomDelta` runtime validation:** `runTrace` now rejects `NaN`, either infinity, and negative assertion values with `CameraInputError` before replay. Finite values at or above zero preserve the existing trace behavior.
