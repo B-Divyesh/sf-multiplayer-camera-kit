@@ -91,6 +91,11 @@ a {
 .replay-section,
 .principles,
 .final-cta,
+.home-preview,
+.how-it-works,
+.privacy-summary,
+.legal-page,
+.demo-banner,
 footer {
   width: min(1240px, calc(100% - 48px));
   margin-inline: auto;
@@ -102,6 +107,32 @@ footer {
   justify-content: space-between;
   min-height: 80px;
   border-bottom: 1px solid rgb(24 37 33 / 28%);
+}
+
+.demo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgb(24 37 33 / 28%);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.demo-banner[hidden] {
+  display: none;
+}
+
+.demo-banner p {
+  margin: 0 auto 0 0;
+}
+
+.demo-banner button,
+.demo-banner .button {
+  min-height: 44px;
+  padding: 8px 14px;
 }
 
 .wordmark {
@@ -135,6 +166,7 @@ nav {
 
 nav a {
   display: inline-flex;
+  min-width: 44px;
   align-items: center;
   min-height: 44px;
   color: var(--ink);
@@ -227,6 +259,31 @@ h3 {
   margin-top: 36px;
 }
 
+.action-note {
+  max-width: 25ch;
+  margin: 0;
+  align-self: center;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.hero-facts {
+  display: grid;
+  gap: 6px;
+  margin: 28px 0 0;
+  padding: 0;
+  color: var(--ink);
+  font-size: 13px;
+  list-style: none;
+}
+
+.hero-facts li::before {
+  margin-right: 8px;
+  color: var(--signal-dark);
+  content: "✓";
+}
+
 .button,
 .install-command,
 .toggle-button,
@@ -242,6 +299,19 @@ h3 {
   font-weight: 700;
   text-decoration: none;
   transition: transform 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.canvas-state-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  border: 1px solid var(--cream);
+  background: var(--cream);
+  color: var(--glass);
+  font-weight: 700;
+  text-align: center;
 }
 
 .button:active,
@@ -648,6 +718,121 @@ canvas:focus-visible {
   border-top: 1px solid rgb(24 37 33 / 28%);
 }
 
+.home-preview,
+.how-it-works,
+.privacy-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.65fr);
+  gap: 64px;
+  align-items: center;
+  padding-block: 112px;
+  border-top: 1px solid rgb(24 37 33 / 28%);
+}
+
+.home-preview > div > p:not(.eyebrow),
+.privacy-summary p,
+.how-it-works li p,
+.legal-page > p,
+.legal-page li {
+  max-width: 65ch;
+  color: var(--muted);
+}
+
+.preview-readout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  border: 1px solid rgb(24 37 33 / 42%);
+  background: var(--paper-deep);
+}
+
+.preview-readout div {
+  min-height: 116px;
+  padding: 20px 16px;
+  border-right: 1px solid rgb(24 37 33 / 28%);
+}
+
+.preview-readout div:last-child {
+  border-right: 0;
+}
+
+.preview-readout dt {
+  color: var(--signal-dark);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.preview-readout dd {
+  margin: 8px 0 0;
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.how-it-works {
+  display: block;
+}
+
+.how-it-works > h2 {
+  max-width: 720px;
+}
+
+.how-it-works ol {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 56px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how-it-works li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 3px solid var(--signal);
+}
+
+.how-it-works li > span {
+  color: var(--signal-dark);
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.how-it-works li p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.privacy-summary {
+  margin-bottom: 96px;
+  border-bottom: 1px solid rgb(24 37 33 / 28%);
+}
+
+.legal-page {
+  padding-block: 96px 128px;
+}
+
+.legal-page h1 {
+  max-width: 760px;
+}
+
+.legal-page h2 {
+  margin-top: 64px;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+}
+
+.legal-page code,
+.privacy-summary code {
+  overflow-wrap: anywhere;
+  color: var(--signal-dark);
+}
+
 .sticky-intro {
   align-self: start;
   position: sticky;
@@ -886,6 +1071,24 @@ footer p {
   margin: 0;
 }
 
+footer a {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.home-integration a,
+.privacy-summary a,
+.legal-page a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -945,6 +1148,11 @@ footer p {
   .replay-section,
   .principles,
   .final-cta,
+  .home-preview,
+  .how-it-works,
+  .privacy-summary,
+  .legal-page,
+  .demo-banner,
   footer {
     width: min(100% - 32px, 1240px);
   }
@@ -988,6 +1196,25 @@ footer p {
     flex-direction: column;
   }
 
+  .action-note {
+    max-width: none;
+  }
+
+  .demo-banner {
+    align-items: stretch;
+    flex-wrap: wrap;
+    padding-block: 12px;
+  }
+
+  .demo-banner p {
+    width: 100%;
+  }
+
+  .demo-banner .button,
+  .demo-banner button {
+    width: calc(50% - 6px);
+  }
+
   .button,
   .install-command {
     width: 100%;
@@ -1012,6 +1239,39 @@ footer p {
 
   .section-grid {
     padding-block: 88px;
+  }
+
+  .home-preview,
+  .privacy-summary {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-block: 80px;
+  }
+
+  .how-it-works {
+    padding-block: 80px;
+  }
+
+  .how-it-works ol {
+    grid-template-columns: 1fr;
+    margin-top: 40px;
+  }
+
+  .preview-readout div {
+    min-height: 96px;
+    padding: 16px 12px;
+  }
+
+  .preview-readout dd {
+    font-size: 19px;
+  }
+
+  .privacy-summary {
+    margin-bottom: 64px;
+  }
+
+  .legal-page {
+    padding-block: 64px 88px;
   }
 
   .instrument-panel {

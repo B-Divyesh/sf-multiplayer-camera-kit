@@ -27,6 +27,11 @@
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/assets/*", "*.webp", "*.xml", "*.txt", "*.json"]
+    "exclude": ["/assets/*", "*.webp", "*.png", "*.svg", "*.xml", "*.txt", "*.json", "*.tgz"]
+  },
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html"
+    }
   }
 }

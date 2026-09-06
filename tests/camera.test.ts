@@ -12,7 +12,7 @@ const config: CameraConfig = {
 }
 
 describe('frameTargets', () => {
-  it('fits multiple targets inside the padded viewport', () => {
+  it('@claim:frame-targets fits multiple targets inside the padded viewport', () => {
     const pose = frameTargets(
       [
         { id: 'one', x: 500, y: 200, width: 100, height: 100 },
@@ -35,7 +35,7 @@ describe('frameTargets', () => {
     expect(pose.centerY).toBe(90)
   })
 
-  it('clamps the visible rectangle to world bounds', () => {
+  it('@claim:world-bounds clamps the visible rectangle to world bounds', () => {
     const pose = frameTargets([{ x: 0, y: 0, width: 20, height: 20 }], config)
     expect(pose.x).toBe(0)
     expect(pose.y).toBe(0)
@@ -46,7 +46,7 @@ describe('createCamera', () => {
   const first: Rect[] = [{ id: 'p1', x: 300, y: 300, width: 32, height: 48 }]
   const second: Rect[] = [{ id: 'p1', x: 1200, y: 600, width: 32, height: 48 }]
 
-  it('snaps on first acquisition and damps independently of frame slicing', () => {
+  it('@claim:stable-camera snaps on first acquisition and damps independently of frame slicing', () => {
     const once = createCamera(config)
     const twice = createCamera(config)
     once.update(first, 0)
@@ -61,7 +61,7 @@ describe('createCamera', () => {
     expect(twoFrames.zoom).toBeCloseTo(oneFrame.zoom, 10)
   })
 
-  it('holds the last pose when the target list becomes empty', () => {
+  it('@claim:empty-targets holds the last pose when the target list becomes empty', () => {
     const camera = createCamera(config)
     const acquired = camera.update(first, 1 / 60)
     expect(camera.update([], 1)).toEqual(acquired)
@@ -99,7 +99,7 @@ describe('createCamera', () => {
     expect(() => createCamera(badConfig as CameraConfig)).toThrowError(new RegExp(message))
   })
 
-  it('rejects invalid targets and time deltas before state is corrupted', () => {
+  it('@claim:input-validation rejects invalid targets and time deltas before state is corrupted', () => {
     const camera = createCamera(config)
     expect(() => camera.update([{ x: Number.NaN, y: 0, width: 1, height: 1 }], 0)).toThrow(CameraInputError)
     expect(() => camera.update(first, -1)).toThrow('deltaSeconds cannot be negative')

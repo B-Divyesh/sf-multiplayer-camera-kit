@@ -1,0 +1,8 @@
+:root { color-scheme: light; --paper: #f3e9d2; --ink: #182521; --glass: #102825; --cream: #fff8e8; --signal: #b83620; --brass: #b78938; }
+* { box-sizing: border-box; }
+body { display: grid; min-height: 100vh; margin: 0; place-items: center; padding: 24px; background: var(--paper); color: var(--ink); font: 18px/1.6 "Courier New", monospace; }
+main { width: min(680px, 100%); padding: clamp(32px, 8vw, 96px); border: 10px solid #e3d3b2; outline: 1px solid var(--ink); background: var(--glass); color: var(--cream); box-shadow: 12px 14px 0 var(--brass); }
+p:first-child { margin: 0 0 16px; color: #eca73d; font-weight: 700; letter-spacing: .12em; }
+h1 { margin: 0 0 20px; font: 800 clamp(2.7rem, 8vw, 5rem)/.95 "Arial Narrow", Arial, sans-serif; }
+a { display: inline-flex; min-height: 48px; align-items: center; margin-top: 20px; padding: 10px 18px; background: var(--signal); color: var(--cream); font-weight: 700; text-decoration: none; }
+a:focus-visible { outline: 3px solid var(--brass); outline-offset: 4px; }

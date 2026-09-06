@@ -53,11 +53,11 @@ describe('runTrace', () => {
     expect(report.failures).toEqual([])
   })
 
-  it('returns byte-for-byte stable results for the same fixed step', () => {
+  it('@claim:deterministic-trace returns byte-for-byte stable results for the same fixed step', () => {
     expect(runTrace(replay, { fixedStepMs: 20 })).toEqual(runTrace(replay, { fixedStepMs: 20 }))
   })
 
-  it('catches a deliberate off-screen regression with target and timestamp', () => {
+  it('@claim:offscreen-regression catches a deliberate off-screen regression with target and timestamp', () => {
     const report = runTrace({
       ...replay,
       config: { ...replay.config, minZoom: 1, maxZoom: 1 },
@@ -105,10 +105,9 @@ describe('runTrace', () => {
     ).toThrow('strictly increasing')
   })
 
-  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -0.01])(
-    'rejects invalid maxZoomDelta assertion %s',
-    maxZoomDelta => {
+  it('@claim:zoom-validation rejects invalid maxZoomDelta assertions', () => {
+    ;[Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, -0.01].forEach(maxZoomDelta => {
       expect(() => runTrace({ ...zoomJumpReplay, assertions: { maxZoomDelta } }, { fixedStepMs: 100 })).toThrow(CameraInputError)
-    },
-  )
+    })
+  })
 })

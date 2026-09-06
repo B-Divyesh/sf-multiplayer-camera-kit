@@ -1,0 +1,114 @@
+[
+  {
+    "id": "frame-targets",
+    "claim": "Returns a camera pose that keeps supplied player rectangles inside padding when configured limits allow it.",
+    "where": "README, demo sample",
+    "test": "npm run test:unit -- --testNamePattern @claim:frame-targets",
+    "sandbox": "two player rectangles and configured world bounds"
+  },
+  {
+    "id": "stable-camera",
+    "claim": "Produces the same damped pose for equivalent frame slicing.",
+    "where": "README",
+    "test": "npm run test:unit -- --testNamePattern @claim:stable-camera",
+    "sandbox": "one 1/30-second update compared with two 1/60-second updates"
+  },
+  {
+    "id": "debug-envelope",
+    "claim": "Draws a visible camera area, padded safety envelope, player rectangles, and labels on Canvas 2D.",
+    "where": "README, demo",
+    "test": "npm run test:unit -- --testNamePattern @claim:debug-envelope",
+    "sandbox": "camera snapshot and recording Canvas 2D context"
+  },
+  {
+    "id": "deterministic-trace",
+    "claim": "Replays the same trace deterministically at a fixed step.",
+    "where": "README, demo",
+    "test": "npm run test:unit -- --testNamePattern @claim:deterministic-trace",
+    "sandbox": "same timestamped trace run twice with a 20 ms fixed step"
+  },
+  {
+    "id": "offscreen-regression",
+    "claim": "Reports an off-screen player with a timestamp.",
+    "where": "README",
+    "test": "npm run test:unit -- --testNamePattern @claim:offscreen-regression",
+    "sandbox": "deliberately impossible two-player trace"
+  },
+  {
+    "id": "empty-targets",
+    "claim": "An empty target list holds the last camera pose.",
+    "where": "README",
+    "test": "npm run test:unit -- --testNamePattern @claim:empty-targets",
+    "sandbox": "camera updated with a target, then an empty list"
+  },
+  {
+    "id": "world-bounds",
+    "claim": "The camera visible rectangle never leaves the configured world bounds.",
+    "where": "README",
+    "test": "npm run test:unit -- --testNamePattern @claim:world-bounds",
+    "sandbox": "target at a world edge"
+  },
+  {
+    "id": "input-validation",
+    "claim": "Invalid rectangles and time values throw CameraInputError before they reach a render transform.",
+    "where": "README",
+    "test": "npm run test:unit -- --testNamePattern @claim:input-validation",
+    "sandbox": "non-finite rectangle coordinate and negative time delta"
+  },
+  {
+    "id": "zoom-validation",
+    "claim": "Invalid maxZoomDelta values throw CameraInputError.",
+    "where": "README",
+    "test": "npm run test:unit -- --testNamePattern @claim:zoom-validation",
+    "sandbox": "NaN, both infinities, and a negative zoom delta"
+  },
+  {
+    "id": "package-delivery",
+    "claim": "The public package download installs with npm and has no runtime dependencies.",
+    "where": "landing install section, README",
+    "test": "npm run test:consumer -- --grep @claim:package-delivery",
+    "sandbox": "served package download installed in a fresh temporary npm consumer"
+  },
+  {
+    "id": "package-formats",
+    "claim": "The public package download provides ESM, CommonJS, and TypeScript declarations.",
+    "where": "landing install section, README",
+    "test": "npm run test:consumer -- --grep @claim:package-formats",
+    "sandbox": "fresh temporary consumer imports both module formats and compiles TypeScript"
+  },
+  {
+    "id": "mit-license",
+    "claim": "The public package download is free under the MIT license.",
+    "where": "landing facts, README",
+    "test": "npm run test:consumer -- --grep @claim:mit-license",
+    "sandbox": "fresh temporary consumer reads installed package metadata and license file"
+  },
+  {
+    "id": "demo-sandbox",
+    "claim": "Try it with sample data opens a populated two-player demo; reset restores it and Start for real discards demo state.",
+    "where": "landing first screen, demo banner, README",
+    "test": "npm run test:e2e -- --grep @claim:demo-sandbox",
+    "sandbox": "fresh browser context starting at the landing page"
+  },
+  {
+    "id": "offline-demo",
+    "claim": "The demo works offline after the first visit.",
+    "where": "landing facts, README",
+    "test": "npm run test:e2e -- --grep @claim:offline-demo",
+    "sandbox": "dedicated fresh browser context, online controlled reload, then offline demo reload"
+  },
+  {
+    "id": "private-demo",
+    "claim": "The demo sends no player data, telemetry, or analytics and stores only an isolated demo browser key.",
+    "where": "landing privacy section, README, privacy page",
+    "test": "npm run test:e2e -- --grep @claim:private-demo",
+    "sandbox": "fresh browser context records all requests, cookies, and browser storage through a demo flow"
+  },
+  {
+    "id": "trace-playground",
+    "claim": "The demo shows both a passing trace and a deliberate off-screen failure.",
+    "where": "landing preview, demo",
+    "test": "npm run test:e2e -- --grep @claim:trace-playground",
+    "sandbox": "fresh browser context runs safe and deliberately broken sample traces"
+  }
+]

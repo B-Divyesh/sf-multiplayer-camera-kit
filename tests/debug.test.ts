@@ -2,7 +2,7 @@ import { expect, it } from 'vitest'
 import { createCamera, drawDebugOverlay } from '../src'
 import type { DebugCanvasContext } from '../src'
 
-it('draws the view, safety envelope, targets, and labels without changing state', () => {
+it('@claim:debug-envelope draws the view, safety envelope, targets, and labels without changing state', () => {
   const camera = createCamera({
     viewport: { width: 800, height: 450 },
     world: { x: 0, y: 0, width: 2000, height: 1000 },

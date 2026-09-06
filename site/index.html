@@ -6,44 +6,60 @@
     <meta name="theme-color" content="#102825" />
     <meta
       name="description"
-      content="A tiny, deterministic multi-target camera policy for browser co-op games."
+      content="Camera framing for browser co-op game developers: player rectangles in, safe camera pose out."
     />
     <link rel="canonical" href="https://multiplayer-camera-kit.sociobot.in/" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%224%22 fill=%22%23102825%22/><path d=%22M7 10v-3h5M20 7h5v5M25 20v5h-5M12 25H7v-5%22 fill=%22none%22 stroke=%22%23e24e2c%22 stroke-width=%222%22/><circle cx=%2216%22 cy=%2216%22 r=%223%22 fill=%22%23f3e9d2%22/></svg>" />
-    <title>Multiplayer Camera Kit — Keep every player in frame</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Multiplayer Camera Kit — Keep players in frame" />
+    <meta property="og:description" content="Camera framing for browser co-op game developers: player rectangles in, safe camera pose out." />
+    <meta property="og:url" content="https://multiplayer-camera-kit.sociobot.in/" />
+    <meta property="og:image" content="https://multiplayer-camera-kit.sociobot.in/social-card.webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Multiplayer Camera Kit — Keep players in frame" />
+    <meta name="twitter:description" content="Camera framing for browser co-op game developers: player rectangles in, safe camera pose out." />
+    <meta name="twitter:image" content="https://multiplayer-camera-kit.sociobot.in/social-card.webp" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Multiplayer Camera Kit — Keep players in frame</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <div id="offline-status" class="offline-status" role="status" hidden>
-      Offline bench mode — the demo and camera math still work locally.
+      Offline mode — the demo and camera math still work locally.
     </div>
     <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="Multiplayer Camera Kit home">
+      <a class="wordmark" data-route href="/" aria-label="Multiplayer Camera Kit home">
         <span aria-hidden="true" class="wordmark-mark">MCK</span>
-        <span>Range unit 01</span>
+        <span>Multiplayer Camera Kit</span>
       </a>
       <nav aria-label="Primary navigation">
-        <a href="#playground">Playground</a>
-        <a href="#integration">Integrate</a>
-        <a href="#replay">Replay test</a>
-        <a href="https://github.com/B-Divyesh/sf-multiplayer-camera-kit">Source</a>
+        <a data-route href="/demo">Demo</a>
+        <a data-route href="/#integration">Use it</a>
+        <a data-route href="/privacy">Privacy</a>
+        <a href="https://github.com/B-Divyesh/sf-multiplayer-camera-kit" target="_blank" rel="noreferrer">Source (GitHub, opens new tab)</a>
       </nav>
     </header>
+    <aside id="demo-banner" class="demo-banner" aria-label="Demo mode" hidden>
+      <p><strong>Demo — sample data, nothing is saved to your game.</strong></p>
+      <button id="reset-demo-banner" type="button">Reset demo</button>
+      <a class="button button-secondary" data-route href="/">Start for real</a>
+    </aside>
 
     <main id="main">
       <section class="hero" id="top" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow"><span class="status-lamp" aria-hidden="true"></span> Camera policy / npm 0.1.0</p>
-          <h1 id="hero-title">Keep the whole party in frame.</h1>
+          <p class="eyebrow"><span class="status-lamp" aria-hidden="true"></span> Sample camera playground</p>
+          <h1 id="hero-title" tabindex="-1">Test two sample players in one camera frame</h1>
           <p class="hero-lead">
-            One small, inspectable camera policy for two-to-four-player browser games. Feed it rectangles;
-            get a stable pose, visible safety envelope, and replayable proof.
+            For browser game developers. Change the sample formation and inspect the camera pose and safety margin.
           </p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#playground">Calibrate the camera</a>
-            <button class="install-command" type="button" data-copy="npm install multiplayer-camera-kit">
+            <a class="button button-primary" href="#playground">Open the sample controls</a>
+            <button class="install-command" type="button" data-copy="npm install https://multiplayer-camera-kit.sociobot.in/downloads/multiplayer-camera-kit-0.1.0.tgz">
               <span aria-hidden="true">$</span>
-              <code>npm i multiplayer-camera-kit</code>
+              <code>npm install …/multiplayer-camera-kit-0.1.0.tgz</code>
               <span class="copy-label">Copy</span>
             </button>
           </div>
@@ -63,18 +79,18 @@
 
       <ul class="spec-strip" aria-label="Package specifications">
         <li><strong>0</strong><span>runtime dependencies</span></li>
-        <li><strong>&lt; 4 KB</strong><span>minified + gzip</span></li>
+        <li><strong>Package download</strong><span>installs with npm</span></li>
         <li><strong>ESM + CJS</strong><span>typed exports</span></li>
         <li><strong>Fixed-step</strong><span>replay proof</span></li>
       </ul>
 
       <section class="playground section-grid" id="playground" aria-labelledby="playground-title">
         <div class="section-intro">
-          <p class="eyebrow">Live viewfinder</p>
-          <h2 id="playground-title">See the safety margin working.</h2>
+          <p class="eyebrow">Sample output</p>
+          <h2 id="playground-title">See the camera safety margin</h2>
           <p>
-            The vermilion box is the padded safe area. Change the formation or nudge a selected player;
-            the exported camera policy does every piece of framing below.
+            The red box is the padded safe area. Change the formation or nudge a sample player.
+            The package updates the camera position and zoom.
           </p>
         </div>
         <div class="instrument-panel">
@@ -112,7 +128,7 @@
             <div id="error-state" class="canvas-state canvas-error" role="alert" hidden>
               <strong>The viewfinder could not render</strong>
               <span id="error-message">Check the camera configuration and reload.</span>
-              <button id="retry-demo" type="button">Reset the demo</button>
+              <a class="canvas-state-link" href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API" target="_blank" rel="noreferrer">Check Canvas browser support (opens new tab)</a>
             </div>
             <p id="viewfinder-description" class="sr-only">
               The live viewfinder displays world-space players, the camera bounds, and a red padded safe area.
@@ -144,8 +160,8 @@
 
       <section class="integration section-grid" id="integration" aria-labelledby="integration-title">
         <div class="section-intro sticky-intro">
-          <p class="eyebrow">Under 30 lines</p>
-          <h2 id="integration-title">Own the policy. Keep your renderer.</h2>
+          <p class="eyebrow">Package usage</p>
+          <h2 id="integration-title">Use the camera output in your renderer</h2>
           <p>
             Coordinates are world pixels, +x right and +y down. The output is a top-left position and a
             pixels-per-world-pixel zoom—plain values that slot into Phaser, Pixi, Canvas, or WebGL.
@@ -158,8 +174,8 @@
           </dl>
         </div>
         <div class="code-instrument">
-          <div class="code-header"><span>camera.ts</span><span>17 lines</span></div>
-          <pre><code><span class="code-accent">import</span> { createCamera } <span class="code-accent">from</span> 'multiplayer-camera-kit'
+          <div class="code-header"><span>camera.ts</span><span>example</span></div>
+          <pre tabindex="0" aria-label="Camera integration example. Use left and right arrow keys to scroll the code."><code><span class="code-accent">import</span> { createCamera } <span class="code-accent">from</span> 'multiplayer-camera-kit'
 
 <span class="code-accent">const</span> camera = createCamera({
   viewport: { width: 1280, height: 720 },
@@ -174,14 +190,14 @@
   world.position.set(-pose.x * pose.zoom, -pose.y * pose.zoom)
   world.scale.set(pose.zoom)
 }</code></pre>
-          <div class="code-footer"><span class="status-lamp" aria-hidden="true"></span><span>No engine adapter required</span></div>
+          <div class="code-footer"><span class="status-lamp" aria-hidden="true"></span><span>Use the returned x, y, and zoom with any renderer</span></div>
         </div>
       </section>
 
       <section class="replay-section" id="replay" aria-labelledby="replay-title">
         <div class="replay-copy">
-          <p class="eyebrow">Deterministic trace runner</p>
-          <h2 id="replay-title">Turn “someone fell off-screen” into a failing test.</h2>
+          <p class="eyebrow">Trace checks</p>
+          <h2 id="replay-title">Test whether a player leaves the camera frame</h2>
           <p>
             Timestamped rectangles are interpolated and replayed at a fixed simulation step. The report names
             the first target, time, and policy limit that failed.
@@ -202,27 +218,27 @@
       </section>
 
       <section class="principles" aria-labelledby="principles-title">
-        <p class="eyebrow">Policy, not framework</p>
-        <h2 id="principles-title">Small enough to audit between playtests.</h2>
+          <p class="eyebrow">How the camera works</p>
+          <h2 id="principles-title">Frame players, apply limits, then test the path</h2>
         <ol>
           <li><span>01</span><div><h3>Fit the party</h3><p>Union the target rectangles, reserve screen-space padding, and preserve the viewport aspect ratio.</p></div></li>
-          <li><span>02</span><div><h3>Respect the rails</h3><p>Clamp against world bounds and explicit zoom limits. Impossible framing becomes visible metadata, never a surprise.</p></div></li>
-          <li><span>03</span><div><h3>Prove the path</h3><p>Replay target traces at a fixed step and assert the same safety rule you inspect in development.</p></div></li>
+          <li><span>02</span><div><h3>Apply limits</h3><p>Clamp to world bounds and explicit zoom limits. The output says when the limits cannot fit every player.</p></div></li>
+          <li><span>03</span><div><h3>Run the trace</h3><p>Replay target traces at a fixed step and check the same safety rule used during development.</p></div></li>
         </ol>
       </section>
 
       <section class="final-cta" aria-labelledby="cta-title">
         <div>
-          <p class="eyebrow">MIT licensed / no telemetry</p>
-          <h2 id="cta-title">Your players move. Your framing math doesn’t have to.</h2>
+          <p class="eyebrow">Free under the MIT license</p>
+          <h2 id="cta-title">Download the package and test it with sample players</h2>
         </div>
-        <a class="button button-primary" href="https://github.com/B-Divyesh/sf-multiplayer-camera-kit">Inspect the source</a>
+        <a class="button button-primary" href="https://github.com/B-Divyesh/sf-multiplayer-camera-kit" target="_blank" rel="noreferrer">Read the source (opens new tab)</a>
       </section>
     </main>
 
     <footer>
-      <p>Multiplayer Camera Kit <span aria-hidden="true">/</span> Param Factory 2026</p>
-      <p>Free, local, and quiet. No accounts. No player data. No analytics.</p>
+      <p>Multiplayer Camera Kit keeps browser co-op players in one camera frame.</p>
+      <p><a data-route href="/privacy">Privacy</a> · <a data-route href="/terms">Terms</a> · Built by Param Factory · v0.1.0</p>
     </footer>
     <script type="module" src="/main.ts"></script>
   </body>

@@ -54,6 +54,7 @@ Motion explains camera mechanics only. Targets drift on long, reversible paths; 
 
 1. `site/public/instrument-hero.webp` — an original, text-free editorial still of an imagined four-subject optical framing instrument. It provides material context behind the live programmable viewfinder; it is not decoration detached from the product. Generated once with the factory image deployment, then cropped/optimized locally to WebP at or below 300 KB.
 2. All reticles, camera bounds, player markers, ticks, arrows, and icons are hand-drawn at runtime with Canvas/CSS. They are functional diagrams, so deterministic code-native primitives are more appropriate than stock imagery.
+3. `site/public/social-card.webp` and `site/public/apple-touch-icon.png` — derived crops of the project-owned `instrument-hero.webp`, composed locally with ImageMagick on 2026-09-06. The social card is 1200×630 and the touch icon is 180×180. They introduce no external artwork or text.
 
 Generation prompt (verbatim):
 

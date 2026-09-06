@@ -4,3 +4,5 @@ dist/
 *.log
 graphify-out/
 .DS_Store
+site/public/downloads/*.tgz
+multiplayer-camera-kit-*.tgz

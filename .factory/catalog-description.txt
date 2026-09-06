@@ -1,0 +1,1 @@
+Keep co-op players in one camera frame with a tested camera pose, safety envelope, and trace replay.

@@ -1,18 +1,24 @@
 # Multiplayer Camera Kit
 
-Safe, inspectable multi-target framing for small browser games. Pass player rectangles and world bounds; receive a stable camera pose, a debug overlay, and deterministic replay assertions. It is engine-agnostic, has no runtime dependencies, and sends no telemetry.
+Multiplayer Camera Kit keeps co-op players in one camera frame. It is for developers of small browser 2D games who need camera position and zoom from player rectangles and world bounds.
 
-Live documentation and playground: https://multiplayer-camera-kit.sociobot.in
+The package returns a camera pose, draws a Canvas 2D safety envelope, and replays target traces at a fixed step. It does not provide networking, rendering, split-screen selection, or physics.
+
+Try the isolated sample playground: https://multiplayer-camera-kit.sociobot.in/demo
 
 ## Install
 
+Install the public package download with npm:
+
 ```sh
-npm install multiplayer-camera-kit
+npm install https://multiplayer-camera-kit.sociobot.in/downloads/multiplayer-camera-kit-0.1.0.tgz
 ```
 
-## Usage
+The download contains ESM, CommonJS, and TypeScript declarations. It has no runtime dependencies and is free under the MIT license.
 
-Coordinates are world-space pixels with +x right and +y down. The viewport is CSS or render pixels. `zoom` is viewport pixels per world pixel: `1` means 1:1, and values below `1` show more of the world.
+## Use the camera pose
+
+Coordinates are world pixels. Positive x goes right, positive y goes down. The viewport uses CSS or render pixels. `zoom` means viewport pixels per world pixel: `1` is one-to-one and a smaller value shows more world.
 
 ```ts
 import { createCamera } from 'multiplayer-camera-kit'
@@ -40,11 +46,9 @@ function tick(dtSeconds: number) {
 }
 ```
 
-That is the complete integration path. `pose.x` and `pose.y` are the visible world's top-left corner. An empty target list holds the last valid pose. Invalid input throws a descriptive `CameraInputError` before it can poison a render transform.
+The controller produces the same damped pose for equivalent frame slicing. An empty target list holds the last pose. The visible rectangle never leaves the world bounds. Invalid rectangles and time values throw `CameraInputError` before they reach a render transform.
 
-### Debug overlay
-
-Draw the current visible world, target bounds, and padded safety envelope on any Canvas 2D context:
+## Draw the safety envelope
 
 ```ts
 import { drawDebugOverlay } from 'multiplayer-camera-kit'
@@ -57,10 +61,9 @@ drawDebugOverlay(context, camera.inspect(), {
 })
 ```
 
-### Deterministic traces
+The overlay draws the visible camera area, padded safe area, player rectangles, and player labels.
 
-Trace samples are timestamped in milliseconds. The runner linearly interpolates target rectangles and advances the policy at a fixed step, so changing display frame rate does not change the result.
-`maxZoomDelta`, when supplied, must be a finite number greater than or equal to zero; invalid configured values throw `CameraInputError` rather than producing a false-green report.
+## Run a trace
 
 ```ts
 import { runTrace } from 'multiplayer-camera-kit'
@@ -78,21 +81,15 @@ const report = runTrace({
 if (!report.ok) throw new Error(report.failures[0].message)
 ```
 
-## Public API
+The runner replays the same trace deterministically at a fixed step. It reports an off-screen player with a timestamp. `maxZoomDelta` must be finite and zero or greater; invalid values throw `CameraInputError`.
 
-- `createCamera(config)` → stateful camera controller with `update`, `snap`, `resize`, `reset`, `pose`, and `inspect`.
-- `frameTargets(targets, config)` → pure, instantaneous framing pose.
-- `drawDebugOverlay(context, snapshot, options?)` → Canvas 2D safety overlay.
-- `runTrace(trace, options?)` → deterministic fixed-step replay and assertion report.
-- TypeScript types are included. ESM and CommonJS builds ship from the same package.
+## Demo and privacy
 
-## Assumptions and limits
+`/demo` opens a populated two-player sample. Its banner reads “Demo — sample data, nothing is saved to your game.” Reset restores the sample. Start for real clears the demo state. The demo uses only a separate `demo:` browser key and does not send player data, telemetry, or analytics.
 
-- Axis-aligned rectangles only; rotation belongs to the renderer.
-- The camera preserves viewport aspect ratio and clamps its visible region to world bounds.
-- If targets span more space than `minZoom` can show, the pose is clamped and `inspect().allTargetsVisible` becomes `false`. This is deliberate: accessibility-safe zoom limits win over impossible framing.
-- A world smaller than the viewport is centered. A target outside world bounds is still considered for visibility, but the camera never leaves the configured world.
-- Networking, rendering, split-screen choice, and physics are intentionally out of scope.
+After the first online visit, the demo opens offline. This uses a service-worker cache for the site files; it does not store game data.
+
+Read [Privacy](https://multiplayer-camera-kit.sociobot.in/privacy) and [Terms](https://multiplayer-camera-kit.sociobot.in/terms).
 
 ## Develop, test, and deploy
 
@@ -101,10 +98,13 @@ Requires Node 20 or newer.
 ```sh
 npm ci
 npm test
-npm run build          # library + site -> dist/
-npm run build:site     # static site only -> dist/site/
-npm run test:e2e       # built-site browser and axe smoke tests
-npm pack               # publish-ready tarball; do not publish from this repo
+npm run typecheck
+npm run build
+npm run test:e2e
+npm run test:consumer
+npm pack --json
 ```
 
-Serve `dist/site` as the static deployment root. The package is free under the MIT license. See [`.factory/design.md`](.factory/design.md) for the visual system and [`.factory/handoff.md`](.factory/handoff.md) for verification notes.
+`npm run build` writes the library to `dist/package`, prepares the public package download, and writes the static site to `dist/site`. Deploy `dist/site` to the product static host. The factory owns registry publishing credentials, so do not run `npm publish` from this repository.
+
+Every visitor-facing claim is listed in [`.factory/claims.json`](.factory/claims.json). The demo mechanics are documented in [`.factory/demo.md`](.factory/demo.md). See [`.factory/design.md`](.factory/design.md) for the visual system and [`.factory/handoff.md`](.factory/handoff.md) for release evidence.

@@ -1,5 +1,5 @@
-import { createCamera, drawDebugOverlay, runTrace } from '../src'
-import type { CameraController, CameraTrace, Rect } from '../src'
+import { createCamera, drawDebugOverlay, runTrace } from '../dist/package/index.js'
+import type { CameraController, CameraTrace, Rect } from '../dist/package/index.js'
 import './style.css'
 
 const colors = {
@@ -11,12 +11,200 @@ const colors = {
   brass: '#d8a84e',
 }
 
+const origin = 'https://multiplayer-camera-kit.sociobot.in'
+const main = document.querySelector<HTMLElement>('#main')!
+const demoTemplate = main.innerHTML
+const demoBanner = document.querySelector<HTMLElement>('#demo-banner')!
+const demoStorageKey = 'demo:multiplayer-camera-kit:state'
+let stopDemo: (() => void) | undefined
+
+const homeTemplate = `
+  <section class="hero home-hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="status-lamp" aria-hidden="true"></span> Camera framing library</p>
+      <h1 id="hero-title" tabindex="-1">Keep co-op players in one camera frame</h1>
+      <p class="hero-lead">For browser game developers who need safe framing without rebuilding camera math.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" data-route href="/demo">Try it with sample data</a>
+        <p class="action-note">Opens a populated two-player camera playground.</p>
+      </div>
+      <ul class="hero-facts" aria-label="Product facts">
+        <li>Free under the MIT license.</li>
+        <li>No accounts, telemetry, or player data.</li>
+        <li>Demo works offline after the first visit.</li>
+      </ul>
+    </div>
+    <figure class="hero-figure">
+      <img src="/instrument-hero.webp" width="1536" height="1024" fetchpriority="high" alt="An illustrated camera instrument holding four game pieces inside a red framing reticle." />
+      <figcaption><span>Camera framing sample</span><span>4 players / 1 frame</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="home-preview" aria-labelledby="preview-title">
+    <div>
+      <p class="eyebrow">Sample result</p>
+      <h2 id="preview-title">Inspect the camera pose before you add it to a game</h2>
+      <p>Open the sample to move two players, view the padded safety area, and run a passing or failing trace.</p>
+    </div>
+    <dl class="preview-readout" aria-label="Example camera output">
+      <div><dt>Players</dt><dd>2</dd></div>
+      <div><dt>Safety</dt><dd>YES</dd></div>
+      <div><dt>Output</dt><dd>x, y, zoom</dd></div>
+    </dl>
+  </section>
+
+  <section class="how-it-works" aria-labelledby="how-title">
+    <p class="eyebrow">How it works</p>
+    <h2 id="how-title">Add one camera policy in three steps</h2>
+    <ol>
+      <li><span>1</span><div><h3>Pass player rectangles</h3><p>Give the package each player rectangle, the viewport, and the world bounds.</p></div></li>
+      <li><span>2</span><div><h3>Apply the pose</h3><p>Use the returned x, y, and zoom in Canvas, Pixi, Phaser, or WebGL.</p></div></li>
+      <li><span>3</span><div><h3>Run a trace</h3><p>Replay recorded positions at a fixed step before a player leaves the safe area.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="integration home-integration" id="integration" aria-labelledby="integration-title">
+    <div class="section-intro">
+      <p class="eyebrow">Install and use</p>
+      <h2 id="integration-title">Download the tested package</h2>
+      <p>Install the public package download with npm.</p>
+      <p><a href="/downloads/multiplayer-camera-kit-0.1.0.tgz" download>Download multiplayer-camera-kit-0.1.0.tgz</a></p>
+    </div>
+    <div class="code-instrument">
+      <div class="code-header"><span>terminal</span><span>npm</span></div>
+      <pre tabindex="0" aria-label="Package install command. Use left and right arrow keys to scroll the command."><code>npm install https://multiplayer-camera-kit.sociobot.in/downloads/multiplayer-camera-kit-0.1.0.tgz</code></pre>
+      <div class="code-footer"><span class="status-lamp" aria-hidden="true"></span><span>ESM, CommonJS, and TypeScript declarations</span></div>
+    </div>
+  </section>
+
+  <section class="privacy-summary" aria-labelledby="privacy-title">
+    <div>
+      <p class="eyebrow">Privacy and limits</p>
+      <h2 id="privacy-title">Camera math stays in the browser</h2>
+      <p>The site sends no player data or analytics. The demo keeps its sample state in a separate <code>demo:</code> browser key and never reads game data.</p>
+    </div>
+    <div>
+      <h3>What it does not do</h3>
+      <p>It does not provide networking, rendering, split-screen selection, or physics.</p>
+      <p><a data-route href="/privacy">Read the privacy details</a></p>
+    </div>
+  </section>
+`
+
+const informationalTemplates: Record<string, { title: string; description: string; html: string }> = {
+  '/privacy': {
+    title: 'Privacy — Multiplayer Camera Kit',
+    description: 'Privacy details for the Multiplayer Camera Kit browser demo and package.',
+    html: `
+      <article class="legal-page">
+        <p class="eyebrow">Privacy</p>
+        <h1 tabindex="-1">Privacy for the camera demo</h1>
+        <p>Multiplayer Camera Kit does not collect accounts, player rectangles, usage analytics, or telemetry.</p>
+        <h2>Browser storage</h2>
+        <p>The sample demo uses the browser key <code>demo:multiplayer-camera-kit:state</code>. It marks the isolated sample session. Leaving or resetting the demo removes that key. The site does not read or write game data.</p>
+        <h2>Network requests</h2>
+        <p>The demo loads its own site files and package download. It does not call a third-party service.</p>
+        <p><a data-route href="/demo">Try the sample demo</a> or <a data-route href="/">return to the product page</a>.</p>
+      </article>`,
+  },
+  '/terms': {
+    title: 'Terms — Multiplayer Camera Kit',
+    description: 'Terms for the Multiplayer Camera Kit package and documentation site.',
+    html: `
+      <article class="legal-page">
+        <p class="eyebrow">Terms</p>
+        <h1 tabindex="-1">Terms for Multiplayer Camera Kit</h1>
+        <p>The package is provided under the MIT license. You may use, copy, modify, and distribute it under that license.</p>
+        <h2>Use of the demo</h2>
+        <p>The demo is sample data only. Check your own game camera behaviour before shipping.</p>
+        <h2>No service account</h2>
+        <p>This site has no paid plan and does not provide a hosted game service.</p>
+        <p><a href="https://github.com/B-Divyesh/sf-multiplayer-camera-kit/blob/main/LICENSE" target="_blank" rel="noreferrer">Read the MIT license on GitHub (opens new tab)</a>.</p>
+      </article>`,
+  },
+}
+
+function discardDemoState(): void {
+  try {
+    localStorage.removeItem(demoStorageKey)
+  } catch {
+    // Storage is optional. The sample still works entirely in memory.
+  }
+}
+
+function setMetadata(title: string, description: string): void {
+  document.title = title
+  document.querySelector<HTMLMetaElement>('meta[name="description"]')!.content = description
+  const path = location.pathname === '/' ? '/' : location.pathname
+  document.querySelector<HTMLLinkElement>('link[rel="canonical"]')!.href = `${origin}${path}`
+  document.querySelector<HTMLMetaElement>('meta[property="og:title"]')!.content = title
+  document.querySelector<HTMLMetaElement>('meta[property="og:description"]')!.content = description
+  document.querySelector<HTMLMetaElement>('meta[property="og:url"]')!.content = `${origin}${path}`
+  document.querySelector<HTMLMetaElement>('meta[name="twitter:title"]')!.content = title
+  document.querySelector<HTMLMetaElement>('meta[name="twitter:description"]')!.content = description
+}
+
+function announceRoute(shouldFocus: boolean): void {
+  const heading = main.querySelector<HTMLElement>('h1')
+  if (!heading) return
+  let announcer = document.querySelector<HTMLElement>('#route-announcement')
+  if (!announcer) {
+    announcer = document.createElement('p')
+    announcer.id = 'route-announcement'
+    announcer.className = 'sr-only'
+    announcer.setAttribute('aria-live', 'polite')
+    document.body.append(announcer)
+  }
+  announcer.textContent = heading.textContent ?? ''
+  if (shouldFocus) heading.focus()
+}
+
+function renderRoute(shouldFocus = false): void {
+  stopDemo?.()
+  stopDemo = undefined
+  delete document.body.dataset.cameraReady
+  const path = location.pathname.replace(/\/$/, '') || '/'
+  demoBanner.hidden = path !== '/demo'
+  if (path === '/demo') {
+    main.innerHTML = demoTemplate
+    setMetadata('Demo — Multiplayer Camera Kit', 'Try a two-player sample camera playground without changing game data.')
+    stopDemo = startDemo()
+  } else if (path === '/') {
+    discardDemoState()
+    main.innerHTML = homeTemplate
+    setMetadata('Multiplayer Camera Kit — Keep players in frame', 'Camera framing for browser co-op game developers: player rectangles in, safe camera pose out.')
+  } else {
+    discardDemoState()
+    const page = informationalTemplates[path] ?? informationalTemplates['/terms']!
+    main.innerHTML = page.html
+    setMetadata(page.title, page.description)
+  }
+  requestAnimationFrame(() => {
+    if (location.hash) document.querySelector(location.hash)?.scrollIntoView()
+    announceRoute(shouldFocus)
+  })
+}
+
+document.addEventListener('click', event => {
+  const link = (event.target as Element).closest<HTMLAnchorElement>('a[data-route]')
+  if (!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+  const destination = new URL(link.href, location.href)
+  if (destination.origin !== location.origin) return
+  event.preventDefault()
+  history.pushState({}, '', `${destination.pathname}${destination.search}${destination.hash}`)
+  renderRoute(true)
+})
+
+window.addEventListener('popstate', () => renderRoute(true))
+renderRoute(false)
+
+function startDemo(): () => void {
 const canvas = document.querySelector<HTMLCanvasElement>('#camera-canvas')!
 const context = canvas.getContext('2d')
 const motionButton = document.querySelector<HTMLButtonElement>('#motion-toggle')!
 const clearButton = document.querySelector<HTMLButtonElement>('#clear-targets')!
 const restoreButton = document.querySelector<HTMLButtonElement>('#restore-targets')!
-const retryButton = document.querySelector<HTMLButtonElement>('#retry-demo')!
+const resetBannerButton = document.querySelector<HTMLButtonElement>('#reset-demo-banner')!
 const emptyState = document.querySelector<HTMLElement>('#empty-state')!
 const errorState = document.querySelector<HTMLElement>('#error-state')!
 const errorMessage = document.querySelector<HTMLElement>('#error-message')!
@@ -39,6 +227,14 @@ let previousTime = performance.now()
 let elapsed = 0
 let animationFrame = 0
 const offsets = new Map<string, { x: number; y: number }>()
+
+function markDemoState(): void {
+  try {
+    localStorage.setItem(demoStorageKey, 'sample')
+  } catch {
+    // Storage is optional. The sample is still isolated in memory.
+  }
+}
 
 function createDemoCamera(): CameraController {
   const rect = canvas.getBoundingClientRect()
@@ -213,7 +409,7 @@ function render(time: number): void {
   } catch (error) {
     cancelAnimationFrame(animationFrame)
     const message = error instanceof Error ? error.message : 'Unknown camera error.'
-    errorMessage.textContent = `${message} Reset the demo to continue.`
+    errorMessage.textContent = `${message} Use a browser with Canvas 2D support, then reload this page.`
     errorState.hidden = false
     demoStatus.textContent = `Camera error: ${message}`
   }
@@ -235,6 +431,7 @@ function resetDemo(nextPreset: PresetName = 'duo'): void {
   camera = createDemoCamera()
   document.querySelector<HTMLInputElement>(`input[name="preset"][value="${preset}"]`)!.checked = true
   errorState.hidden = true
+  markDemoState()
 }
 
 function nudge(direction: string): void {
@@ -247,6 +444,7 @@ function nudge(direction: string): void {
   if (direction === 'up') offset.y -= amount
   if (direction === 'down') offset.y += amount
   offsets.set(id, offset)
+  markDemoState()
   demoStatus.textContent = `${selectedPlayer.selectedOptions[0]?.textContent ?? 'Player'} nudged ${direction}.`
 }
 
@@ -281,10 +479,8 @@ restoreButton.addEventListener('click', () => {
   resetDemo('duo')
   canvas.focus()
 })
-retryButton.addEventListener('click', () => {
+resetBannerButton.addEventListener('click', () => {
   resetDemo('duo')
-  previousTime = performance.now()
-  requestAnimationFrame(render)
   canvas.focus()
 })
 
@@ -357,13 +553,22 @@ window.addEventListener('offline', updateOnlineStatus)
 updateOnlineStatus()
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
+  const registerServiceWorker = () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {
       // Offline support is an enhancement; camera logic is unaffected.
     })
-  })
+  }
+  if (document.readyState === 'complete') registerServiceWorker()
+  else window.addEventListener('load', registerServiceWorker, { once: true })
 }
 
 camera = createDemoCamera()
+markDemoState()
 setPaused(paused)
 requestAnimationFrame(render)
+return () => {
+  cancelAnimationFrame(animationFrame)
+  window.removeEventListener('online', updateOnlineStatus)
+  window.removeEventListener('offline', updateOnlineStatus)
+}
+}

@@ -1,14 +1,14 @@
-const CACHE = 'mck-site-v1'
+const CACHE = 'mck-site-v2'
 
 async function precacheShell() {
   const cache = await caches.open(CACHE)
-  const response = await fetch('./')
-  await cache.put('./', response.clone())
+  const response = await fetch('/')
+  await cache.put('/', response.clone())
   const html = await response.text()
   const paths = [...html.matchAll(/(?:src|href)="([^"#]+)"/g)]
     .map(match => match[1])
     .filter(path => path?.startsWith('/') && !path.startsWith('//'))
-  await cache.addAll([...new Set(paths)])
+  await cache.addAll([...new Set(['/', '/demo', '/privacy', '/terms', ...paths])])
 }
 
 self.addEventListener('install', event => {
@@ -30,6 +30,6 @@ self.addEventListener('fetch', event => {
       const copy = response.clone()
       caches.open(CACHE).then(cache => cache.put(event.request, copy))
       return response
-    }).catch(() => event.request.mode === 'navigate' ? caches.match('./') : Response.error())),
+    }).catch(() => event.request.mode === 'navigate' ? caches.match('/') : Response.error())),
   )
 })
